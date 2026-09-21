@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pendaftaran Mitra Driver GARJEK</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        garjek: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            dark: '#0f172a',
+                            accent: '#eab308'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .step-active { border-color: #16a34a; background-color: #16a34a; color: white; }
+        .step-done { border-color: #16a34a; background-color: #dcfce7; color: #15803d; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        @media print {
+            body * { visibility: hidden; }
+            #printableReceipt, #printableReceipt * { visibility: visible; }
+            #printableReceipt { position: absolute; left: 0; top: 0; width: 100%; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+
+    <!-- Header Navigation -->
+    <header class="bg-slate-900 text-white sticky top-0 z-40 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('register')">
+                <div class="w-10 h-10 bg-garjek-600 rounded-xl flex items-center justify-center font-extrabold text-2xl text-white shadow-lg shadow-garjek-600/30">
+                    G
+                </div>
+                <div>
+                    <span class="font-extrabold text-xl tracking-tight text-white">GARJEK</span>
+                    <span class="text-xs block text-garjek-500 font-semibold uppercase tracking-wider">Mitra Driver Portal</span>
+                </div>
+            </div>
+
+            <!-- Navigation Bar -->
+            <nav class="hidden md:flex items-center gap-2">
+                <button onclick="switchTab('register')" id="nav-register" class="px-4 py-2 rounded-lg text-sm font-medium transition bg-garjek-600 text-white">
+                    <i class="fa-solid fa-user-plus mr-1.5"></i> Pendaftaran
+                </button>
+                <button onclick="switchTab('status')" id="nav-status" class="px-4 py-2 rounded-lg text-sm font-medium transition text-slate-300 hover:text-white hover:bg-slate-800">
+                    <i class="fa-solid fa-magnifying-glass mr-1.5"></i> Cek Status NIK
+                </button>
+                <button onclick="switchTab('admin-login')" id="nav-admin" class="px-4 py-2 rounded-lg text-sm font-medium transition text-slate-300 hover:text-white hover:bg-slate-800">
+                    <i class="fa-solid fa-user-shield mr-1.5"></i> Portal Admin
+                </button>
+            </nav>
+
+            <!-- Mobile Menu Toggle -->
+            <button onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-lg text-slate-300 hover:bg-slate-800">
+                <i class="fa-solid fa-bars text-xl"></i>
+            </button>
+        </div>
+
+        <!-- Mobile Dropdown Menu -->
+        <div id="mobileMenu" class="hidden md:hidden border-t border-slate-800 px-4 py-3 bg-slate-900 space-y-2">
+            <button onclick="switchTab('register'); toggleMobileMenu()" class="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-white hover:bg-slate-800 flex items-center">
+                <i class="fa-solid fa-user-plus w-6 text-garjek-500"></i> Form Pendaftaran
+            </button>
+            <button onclick="switchTab('status'); toggleMobileMenu()" class="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-white hover:bg-slate-800 flex items-center">
+                <i class="fa-solid fa-magnifying-glass w-6 text-garjek-500"></i> Cek Status Pendaftaran
+            </button>
+            <button onclick="switchTab('admin-login'); toggleMobileMenu()" class="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-white hover:bg-slate-800 flex items-center">
+                <i class="fa-solid fa-user-shield w-6 text-garjek-500"></i> Dashboard Administrator
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- TAB 1: FORM PENDAFTARAN (WIZARD 6 TAHAP) -->
+        <section id="tab-register" class="space-y-6">
+            <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-garjek-900 rounded-2xl p-6 md:p-8 text-white shadow-xl">
+                <div class="max-w-3xl">
+                    <span class="bg-garjek-600/30 text-garjek-400 border border-garjek-500/30 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                        Pendaftaran Resmi 2026
+                    </span>
+                    <h1 class="text-2xl md:text-4xl font-extrabold mt-3 tracking-tight">PENDAFTARAN MITRA DRIVER GARJEK</h1>
+                    <p class="text-slate-300 mt-2 text-sm md:text-base leading-relaxed">
+                        Bergabunglah menjadi mitra pengemudi handal GARJEK. Nikmati fleksibilitas waktu, penghasilan kompetitif, dan ekosistem transportasi online terpercaya.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Wizard Card -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <!-- Wizard Progress Bar Header -->
+                <div class="bg-slate-50 border-b border-slate-200 p-4 sm:p-6 overflow-x-auto hide-scrollbar">
+                    <div class="flex items-center justify-between min-w-[650px] relative">
+                        <div class="absolute top-1/2 left-0 right-0 h-1 bg-slate-200 -translate-y-1/2 z-0"></div>
+                        <div id="progress-bar-fill" class="absolute top-1/2 left-0 h-1 bg-garjek-600 -translate-y-1/2 z-0 transition-all duration-300 w-[0%]"></div>
+
+                        <!-- Step Icons -->
+                        <div class="step-item z-10 flex flex-col items-center gap-1 cursor-pointer" onclick="goToStep(1)">
+                            <div id="step-badge-1" class="w-9 h-9 rounded-full border-2 step-active font-bold flex items-center justify-center text-sm shadow-sm transition">1</div>
+                            <span class="text-xs font-medium text-slate-700">Data Diri</span>
+                        </div>
+                        <div class="step-item z-10 flex flex-col items-center gap-1 cursor-pointer" onclick="goToStep(2)">
+                            <div id="step-badge-2" class="w-9 h-9 rounded-full border-2 bg-white border-slate-300 text-slate-500 font-bold flex items-center justify-center text-sm transition">2</div>
+                            <span class="text-xs font-medium text-slate-600">Layanan</span>
+                        </div>
+                        <div class="step-item z-10 flex flex-col items-center gap-1 cursor-pointer" onclick="goToStep(3)">
+                            <div id="step-badge-3" class="w-9 h-9 rounded-full border-2 bg-white border-slate-300 text-slate-500 font-bold flex items-center justify-center text-sm transition">3</div>
+                            <span class="text-xs font-medium text-slate-600">Kendaraan</span>
+                        </div>
+                        <div class="step-item z-10 flex flex-col items-center gap-1 cursor-pointer" onclick="goToStep(4)">
+                            <div id="step-badge-4" class="w-9 h-9 rounded-full border-2 bg-white border-slate-300 text-slate-500 font-bold flex items-center justify-center text-sm transition">4</div>
+                            <span class="text-xs font-medium text-slate-600">Dokumen</span>
+                        </div>
+                        <div class="step-item z-10 flex flex-col items-center gap-1 cursor-pointer" onclick="goToStep(5)">
+                            <div id="step-badge-5" class="w-9 h-9 rounded-full border-2 bg-white border-slate-300 text-slate-500 font-bold flex items-center justify-center text-sm transition">5</div>
+                            <span class="text-xs font-medium text-slate-600">Pembayaran</span>
+                        </div>
+                        <div class="step-item z-10 flex flex-col items-center gap-1 cursor-pointer" onclick="goToStep(6)">
+                            <div id="step-badge-6" class="w-9 h-9 rounded-full border-2 bg-white border-slate-300 text-slate-500 font-bold flex items-center justify-center text-sm transition">6</div>
+                            <span class="text-xs font-medium text-slate-600">Konfirmasi</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Wizard Content -->
+                <form id="registrationForm" onsubmit="handleFormSubmit(event)" class="p-6 md:p-8">
+                    
+                    <!-- STEP 1: DATA DIRI -->
+                    <div id="step-content-1" class="space-y-6">
+                        <div class="border-b border-slate-100 pb-3">
+                            <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                <i class="fa-solid fa-id-card text-garjek-600"></i> Tahap 1: Informasi Data Diri Pendaftar
+                            </h2>
+                            <p class="text-xs text-slate-500">Isi data identitas diri sesuai dengan dokumen resmi KTP.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Nama Lengkap (Sesuai KTP) <span class="text-red-500">*</span></label>
+                                <input type="text" id="namaLengkap" required oninput="this.value = this.value.toUpperCase()" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-garjek-500 focus:border-garjek-500 text-sm font-medium uppercase placeholder-slate-400" placeholder="CONTOH: AHMAD SYAIFUDDIN">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">NIK (16 Digit Angka) <span class="text-red-500">*</span></label>
+                                <input type="text" id="nik" required maxlength="16" pattern="\d{16}" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-garjek-500 focus:border-garjek-500 text-sm font-medium tracking-wider" placeholder="3201234567890001">
+                                <p class="text-[11px] text-slate-400 mt-0.5">Harus tepat 16 angka tanpa spasi/karakter lain.</p>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Tempat Lahir <span class="text-red-500">*</span></label>
+                                <input type="text" id="tempatLahir" required oninput="this.value = this.value.toUpperCase()" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-garjek-500 text-sm uppercase" placeholder="KABUPATEN BEKASI">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Tanggal Lahir <span class="text-red-500">*</span></label>
+                                <input type="date" id="tanggalLahir" required class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-garjek-500 text-sm">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Jenis Kelamin <span class="text-red-500">*</span></label>
+                                <select id="jenisKelamin" required class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-garjek-500 text-sm">
+                                    <option value="">-- Pilih Jenis Kelamin --</option>
+                                    <option value="LAKI-LAKI">LAKI-LAKI</option>
+                                    <option value="PEREMPUAN">PEREMPUAN</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Nomor WhatsApp <span class="text-red-500">*</span></label>
+                                <input type="tel" id="whatsapp" required placeholder="081932592253" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-garjek-500 text-sm">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Email Aktif <span class="text-red-500">*</span></label>
+                                <input type="email" id="email" required placeholder="pendaftar@gmail.com" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-garjek-500 text-sm">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Status Pernikahan <span class="text-red-500">*</span></label>
+                                <select id="statusPernikahan" required class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-garjek-500 text-sm">
+                                    <option value="">-- Pilih Status --</option>
+                                    <option value="BELUM MENIKAH">BELUM MENIKAH</option>
+                                    <option value="MENIKAH">MENIKAH</option>
+                                    <option value="CERAI">CERAI</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Address Section -->
+                        <div class="pt-4 border-t border-slate-100">
+                            <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider mb-3">Alamat Lengkap Domisili</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Negara</label>
+                                    <input type="text" id="negara" value="INDONESIA" readonly class="w-full px-3.5 py-2.5 rounded-lg border border-slate-200 bg-slate-100 text-sm font-semibold text-slate-600">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Provinsi <span class="text-red-500">*</span></label>
+                                    <input type="text" id="provinsi" required oninput="this.value = this.value.toUpperCase()" placeholder="JAWA BARAT" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-garjek-500 text-sm uppercase">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Kabupaten/Kota <span class="text-red-500">*</span></label>
+                                    <input type="text" id="kabupaten" required oninput="this.value = this.value.toUpperCase()" placeholder="KABUPATEN BEKASI" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-garjek-500 text-sm uppercase">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Kecamatan <span class="text-red-500">*</span></label>
+                                    <input type="text" id="kecamatan" required oninput="this.value = this.value.toUpperCase()" placeholder="TAMBUN SELATAN" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-garjek-500 text-sm uppercase">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Desa / Kelurahan <span class="text-red-500">*</span></label>
+                                    <input type="text" id="desa" required oninput="this.value = this.value.toUpperCase()" placeholder="MANGUNJAYA" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-garjek-500 text-sm uppercase">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Dusun / Kampung</label>
+                                    <input type="text" id="dusun" oninput="this.value = this.value.toUpperCase()" placeholder="KAMPUNG SILUMAN" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-garjek-500 text-sm uppercase">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">RT <span class="text-red-500">*</span></label>
+                                    <input type="text" id="rt" required placeholder="002" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">RW <span class="text-red-500">*</span></label>
+                                    <input type="text" id="rw" required placeholder="014" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Kode Pos <span class="text-red-500">*</span></label>
+                                    <input type="text" id="kodePos" required placeholder="17510" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm">
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Alamat Jalan / Patokan Lengkap <span class="text-red-500">*</span></label>
+                                <textarea id="alamatLengkap" required rows="2" oninput="this.value = this.value.toUpperCase()" placeholder="JL. GARUDA NO. 45 KAMPUNG SILUMAN PATOKAN DEPAN MASJID" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-garjek-500 text-sm uppercase"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 2: PILIHAN LAYANAN -->
+                    <div id="step-content-2" class="hidden space-y-6">
+                        <div class="border-b border-slate-100 pb-3">
+                            <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                <i class="fa-solid fa-motorcycle text-garjek-600"></i> Tahap 2: Pilih Jenis Layanan Mitra
+                            </h2>
+                            <p class="text-xs text-slate-500">Pilih kategori kendaraan operasional yang akan Anda daftarkan.</p>
+                        </div>
+
+                        <input type="hidden" id="layananPilihan" required value="GARBIKE">
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- GARBIKE Card -->
+                            <div id="card-garbike" onclick="selectService('GARBIKE')" class="cursor-pointer border-2 border-garjek-600 bg-garjek-50/50 rounded-2xl p-6 transition-all shadow-md relative hover:border-garjek-600">
+                                <div class="absolute top-4 right-4 bg-garjek-600 text-white rounded-full p-1.5 w-7 h-7 flex items-center justify-center text-xs">
+                                    <i id="check-garbike" class="fa-solid fa-check"></i>
+                                </div>
+                                <div class="w-14 h-14 bg-garjek-600 text-white rounded-2xl flex items-center justify-center text-2xl mb-4 shadow-lg shadow-garjek-600/30">
+                                    <i class="fa-solid fa-motorcycle"></i>
+                                </div>
+                                <h3 class="text-xl font-extrabold text-slate-900">GARBIKE</h3>
+                                <p class="text-xs text-slate-600 mt-1">Layanan pengemudi Sepeda Motor (Ojek Online, Kurir, Food Delivery).</p>
+                                <div class="mt-4 pt-4 border-t border-slate-200/80 flex items-center justify-between text-xs">
+                                    <span class="text-slate-500 font-medium">Biaya Registrasi & Atribut:</span>
+                                    <span class="font-extrabold text-garjek-700 text-sm">Rp150.000</span>
+                                </div>
+                            </div>
+
+                            <!-- GARCAR Card -->
+                            <div id="card-garcar" onclick="selectService('GARCAR')" class="cursor-pointer border-2 border-slate-200 rounded-2xl p-6 transition-all hover:border-garjek-500 relative">
+                                <div class="absolute top-4 right-4 bg-slate-200 text-slate-400 rounded-full p-1.5 w-7 h-7 flex items-center justify-center text-xs">
+                                    <i id="check-garcar" class="fa-solid fa-check opacity-0"></i>
+                                </div>
+                                <div class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center text-2xl mb-4 shadow-lg shadow-blue-600/30">
+                                    <i class="fa-solid fa-car"></i>
+                                </div>
+                                <h3 class="text-xl font-extrabold text-slate-900">GARCAR</h3>
+                                <p class="text-xs text-slate-600 mt-1">Layanan pengemudi Mobil / Roda Empat (Taksiner/Sewa Kendaraan).</p>
+                                <div class="mt-4 pt-4 border-t border-slate-200 flex items-center justify-between text-xs">
+                                    <span class="text-slate-500 font-medium">Biaya Registrasi & Atribut:</span>
+                                    <span id="garcarFeeDisplay" class="font-extrabold text-blue-700 text-sm">Rp250.000</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3: DATA KENDARAAN -->
+                    <div id="step-content-3" class="hidden space-y-6">
+                        <div class="border-b border-slate-100 pb-3">
+                            <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                <i class="fa-solid fa-car-side text-garjek-600"></i> Tahap 3: Informasi Kendaraan Operasional
+                            </h2>
+                            <p class="text-xs text-slate-500">Lengkapi spesifikasi armada yang akan digunakan.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Nomor Polisi (Plat Nomor) <span class="text-red-500">*</span></label>
+                                <input type="text" id="noPolisi" required oninput="this.value = this.value.toUpperCase()" placeholder="B 1234 ABC" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm uppercase font-bold tracking-wider">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Merek Kendaraan <span class="text-red-500">*</span></label>
+                                <input type="text" id="merekKendaraan" required oninput="this.value = this.value.toUpperCase()" placeholder="HONDA / YAMAHA / TOYOTA" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm uppercase">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Tipe Kendaraan <span class="text-red-500">*</span></label>
+                                <input type="text" id="tipeKendaraan" required oninput="this.value = this.value.toUpperCase()" placeholder="VARIO 160 / AVANZA VELOZ" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm uppercase">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Tahun Kendaraan <span class="text-red-500">*</span></label>
+                                <input type="number" id="tahunKendaraan" required min="2012" max="2027" placeholder="2021" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Warna Kendaraan <span class="text-red-500">*</span></label>
+                                <input type="text" id="warnaKendaraan" required oninput="this.value = this.value.toUpperCase()" placeholder="HITAM METALIK" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm uppercase">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Nomor STNK <span class="text-red-500">*</span></label>
+                                <input type="text" id="noSTNK" required oninput="this.value = this.value.toUpperCase()" placeholder="1234567890" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm uppercase">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Nama Pemilik Kendaraan <span class="text-red-500">*</span></label>
+                                <input type="text" id="namaPemilikKendaraan" required oninput="this.value = this.value.toUpperCase()" placeholder="SESUAI DOKUMEN STNK" class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm uppercase">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Status Kepemilikan <span class="text-red-500">*</span></label>
+                                <select id="statusKepemilikan" required class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm">
+                                    <option value="">-- Pilih Status --</option>
+                                    <option value="Milik Sendiri">Milik Sendiri</option>
+                                    <option value="Milik Keluarga">Milik Keluarga</option>
+                                    <option value="Sewa">Sewa</option>
+                                    <option value="Lainnya">Lainnya</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 4: UPLOAD DOKUMEN -->
+                    <div id="step-content-4" class="hidden space-y-6">
+                        <div class="border-b border-slate-100 pb-3">
+                            <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                <i class="fa-solid fa-file-arrow-up text-garjek-600"></i> Tahap 4: Upload Dokumen Persyaratan
+                            </h2>
+                            <p class="text-xs text-slate-500">Unggah berkas foto jelas (Format: JPG/PNG, Maksimal 5MB per file).</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Foto KTP -->
+                            <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50">
+                                <label class="block text-xs font-bold text-slate-800 uppercase mb-1">Foto KTP Asli <span class="text-red-500">*</span></label>
+                                <input type="file" id="fileKTP" accept="image/*" required onchange="handleFilePreview(this, 'previewKTP', 'nameKTP')" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-garjek-600 file:text-white hover:file:bg-garjek-700 cursor-pointer">
+                                <div class="mt-2 flex items-center gap-2">
+                                    <span id="nameKTP" class="text-xs text-slate-500 truncate">Belum ada berkas</span>
+                                </div>
+                                <img id="previewKTP" class="hidden mt-2 max-h-32 rounded-lg border border-slate-300 shadow-sm object-cover">
+                            </div>
+
+                            <!-- Foto SIM -->
+                            <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50">
+                                <label class="block text-xs font-bold text-slate-800 uppercase mb-1">Foto SIM Aktif (C/A) <span class="text-red-500">*</span></label>
+                                <input type="file" id="fileSIM" accept="image/*" required onchange="handleFilePreview(this, 'previewSIM', 'nameSIM')" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-garjek-600 file:text-white hover:file:bg-garjek-700 cursor-pointer">
+                                <div class="mt-2 flex items-center gap-2">
+                                    <span id="nameSIM" class="text-xs text-slate-500 truncate">Belum ada berkas</span>
+                                </div>
+                                <img id="previewSIM" class="hidden mt-2 max-h-32 rounded-lg border border-slate-300 shadow-sm object-cover">
+                            </div>
+
+                            <!-- Foto STNK -->
+                            <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50">
+                                <label class="block text-xs font-bold text-slate-800 uppercase mb-1">Foto STNK Aktif <span class="text-red-500">*</span></label>
+                                <input type="file" id="fileSTNK" accept="image/*" required onchange="handleFilePreview(this, 'previewSTNK', 'nameSTNK')" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-garjek-600 file:text-white hover:file:bg-garjek-700 cursor-pointer">
+                                <div class="mt-2 flex items-center gap-2">
+                                    <span id="nameSTNK" class="text-xs text-slate-500 truncate">Belum ada berkas</span>
+                                </div>
+                                <img id="previewSTNK" class="hidden mt-2 max-h-32 rounded-lg border border-slate-300 shadow-sm object-cover">
+                            </div>
+
+                            <!-- Foto Half Body Driver -->
+                            <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50">
+                                <label class="block text-xs font-bold text-slate-800 uppercase mb-1">Foto Half Body (Pasfoto Rapi) <span class="text-red-500">*</span></label>
+                                <input type="file" id="fileFotoDriver" accept="image/*" required onchange="handleFilePreview(this, 'previewFotoDriver', 'nameFotoDriver')" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-garjek-600 file:text-white hover:file:bg-garjek-700 cursor-pointer">
+                                <div class="mt-2 flex items-center gap-2">
+                                    <span id="nameFotoDriver" class="text-xs text-slate-500 truncate">Belum ada berkas</span>
+                                </div>
+                                <img id="previewFotoDriver" class="hidden mt-2 max-h-32 rounded-lg border border-slate-300 shadow-sm object-cover">
+                            </div>
+
+                            <!-- Foto Kendaraan Tampak Depan -->
+                            <div class="border border-slate-200 rounded-xl p-4 bg-slate-50/50 md:col-span-2">
+                                <label class="block text-xs font-bold text-slate-800 uppercase mb-1">Foto Kendaraan Tampak Depan (Terlihat Plat Nomor) <span class="text-red-500">*</span></label>
+                                <input type="file" id="fileFotoKendaraan" accept="image/*" required onchange="handleFilePreview(this, 'previewFotoKendaraan', 'nameFotoKendaraan')" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-garjek-600 file:text-white hover:file:bg-garjek-700 cursor-pointer">
+                                <div class="mt-2 flex items-center gap-2">
+                                    <span id="nameFotoKendaraan" class="text-xs text-slate-500 truncate">Belum ada berkas</span>
+                                </div>
+                                <img id="previewFotoKendaraan" class="hidden mt-2 max-h-36 rounded-lg border border-slate-300 shadow-sm object-cover">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 5: PEMBAYARAN -->
+                    <div id="step-content-5" class="hidden space-y-6">
+                        <div class="border-b border-slate-100 pb-3">
+                            <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                <i class="fa-solid fa-wallet text-garjek-600"></i> Tahap 5: Pembayaran Registrasi & Atribut
+                            </h2>
+                            <p class="text-xs text-slate-500">Lakukan pembayaran biaya administrasi dan pemesanan atribut resmi GARJEK.</p>
+                        </div>
+
+                        <!-- Payment Info Card -->
+                        <div class="bg-gradient-to-br from-blue-900 to-indigo-900 rounded-2xl p-6 text-white shadow-lg space-y-4">
+                            <div class="flex items-center justify-between border-b border-blue-800/80 pb-4">
+                                <div>
+                                    <span class="text-xs text-blue-200 uppercase font-semibold">Layanan Dipilih</span>
+                                    <h3 id="paymentServiceTitle" class="text-xl font-bold">GARBIKE</h3>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-xs text-blue-200 uppercase font-semibold">Total Tagihan</span>
+                                    <div id="paymentAmountDisplay" class="text-2xl font-extrabold text-yellow-400">Rp150.000</div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white/10 rounded-xl p-4 backdrop-blur-sm space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-10 h-10 bg-sky-500 rounded-lg flex items-center justify-center font-black text-white">DANA</div>
+                                        <div>
+                                            <p class="text-xs text-blue-200">Metode Pembayaran Transfer</p>
+                                            <p id="paymentAccountName" class="font-bold text-sm">Ahmad Syaifuddin</p>
+                                        </div>
+                                    </div>
+                                    <button type="button" onclick="copyDanaNumber()" class="px-3 py-1.5 bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-bold rounded-lg text-xs transition shadow-sm flex items-center gap-1.5">
+                                        <i class="fa-solid fa-copy"></i> SALIN NOMOR DANA
+                                    </button>
+                                </div>
+                                <div class="text-lg font-mono tracking-wider font-extrabold text-white bg-slate-900/60 p-2.5 rounded-lg text-center border border-white/10" id="danaNumberText">
+                                    081932592253
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Upload Bukti Pembayaran -->
+                        <div class="border border-slate-200 rounded-xl p-5 bg-slate-50/50 space-y-3">
+                            <label class="block text-xs font-bold text-slate-800 uppercase">Upload Bukti Transfer Pembayaran <span class="text-red-500">*</span></label>
+                            <input type="file" id="fileBuktiBayar" accept="image/*" required onchange="handleFilePreview(this, 'previewBuktiBayar', 'nameBuktiBayar')" class="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-garjek-600 file:text-white hover:file:bg-garjek-700 cursor-pointer">
+                            <div class="flex items-center gap-2">
+                                <span id="nameBuktiBayar" class="text-xs text-slate-500">Belum ada bukti yang diunggah</span>
+                            </div>
+                            <img id="previewBuktiBayar" class="hidden mt-2 max-h-40 rounded-lg border border-slate-300 shadow-sm object-cover">
+
+                            <!-- Alert Disclaimer -->
+                            <div class="p-3.5 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3 text-amber-800 text-xs mt-3">
+                                <i class="fa-solid fa-triangle-exclamation text-amber-600 text-base mt-0.5"></i>
+                                <span><strong>PEMBERITAHUAN IMPORTANT:</strong> Pembayaran akan dinyatakan valid setelah dilakukan verifikasi pencocokan mutasi oleh administrator GARJEK.</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STEP 6: KONFIRMASI DATA & KIRIM -->
+                    <div id="step-content-6" class="hidden space-y-6">
+                        <div class="border-b border-slate-100 pb-3">
+                            <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                                <i class="fa-solid fa-clipboard-check text-garjek-600"></i> Tahap 6: Review Data & Pernyataan Persetujuan
+                            </h2>
+                            <p class="text-xs text-slate-500">Periksa kembali ringkasan data sebelum melakukan pengiriman pendaftaran.</p>
+                        </div>
+
+                        <!-- Summary Table -->
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs space-y-3">
+                            <h3 class="font-bold text-slate-800 border-b border-slate-200 pb-2 uppercase tracking-wide">Ringkasan Pendaftaran</h3>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-2 text-slate-700">
+                                <div><span class="text-slate-400 block">Nama:</span> <strong id="summaryNama">-</strong></div>
+                                <div><span class="text-slate-400 block">NIK:</span> <strong id="summaryNIK">-</strong></div>
+                                <div><span class="text-slate-400 block">WhatsApp:</span> <strong id="summaryWA">-</strong></div>
+                                <div><span class="text-slate-400 block">Layanan:</span> <strong id="summaryLayanan">-</strong></div>
+                                <div><span class="text-slate-400 block">No. Polisi:</span> <strong id="summaryNoPol">-</strong></div>
+                                <div><span class="text-slate-400 block">Kendaraan:</span> <strong id="summaryKendaraan">-</strong></div>
+                            </div>
+                        </div>
+
+                        <!-- Agreement Checkbox -->
+                        <div class="p-4 border border-garjek-200 bg-garjek-50/50 rounded-xl">
+                            <label class="flex items-start gap-3 cursor-pointer">
+                                <input type="checkbox" id="persetujuanCheck" required class="mt-1 w-4 h-4 text-garjek-600 border-slate-300 rounded focus:ring-garjek-500">
+                                <span class="text-xs text-slate-700 leading-relaxed">
+                                    Saya menyatakan bahwa seluruh data dan dokumen yang saya berikan adalah benar, asli, dan valid. Saya menyetujui seluruh ketentuan penggunaan data untuk proses verifikasi dan pendaftaran mitra driver GARJEK.
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Buttons -->
+                    <div class="mt-8 pt-6 border-t border-slate-200 flex items-center justify-between">
+                        <button type="button" id="btnPrev" onclick="changeStep(-1)" class="hidden px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-bold text-sm hover:bg-slate-100 transition">
+                            <i class="fa-solid fa-arrow-left mr-1.5"></i> Kembali
+                        </button>
+                        <div></div> <!-- Spacer -->
+                        <button type="button" id="btnNext" onclick="changeStep(1)" class="px-6 py-2.5 rounded-xl bg-garjek-600 text-white font-bold text-sm hover:bg-garjek-700 transition shadow-lg shadow-garjek-600/30 flex items-center gap-2">
+                            Lanjut <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                        <button type="submit" id="btnSubmit" class="hidden px-8 py-3 rounded-xl bg-garjek-600 hover:bg-garjek-700 text-white font-extrabold text-sm transition shadow-lg shadow-garjek-600/30 flex items-center gap-2">
+                            <i class="fa-solid fa-paper-plane"></i> SUBMIT PENDAFTARAN
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- TAB SUCCESS: RESULT & BUKTI PENDAFTARAN -->
+        <section id="tab-success" class="hidden max-w-2xl mx-auto space-y-6">
+            <div id="printableReceipt" class="bg-white rounded-2xl shadow-xl border border-slate-200 p-6 md:p-8 space-y-6 text-center">
+                <div class="w-16 h-16 bg-garjek-100 text-garjek-600 rounded-full flex items-center justify-center text-3xl mx-auto shadow-inner">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+
+                <div>
+                    <span class="bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                        MENUNGGU VERIFIKASI
+                    </span>
+                    <h2 class="text-2xl font-extrabold text-slate-900 mt-3">PENDAFTARAN BERHASIL!</h2>
+                    <p class="text-xs text-slate-500 mt-1">Data dan berkas dokumen Anda telah tersimpan dengan aman di sistem GARJEK.</p>
+                </div>
+
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-left space-y-2 text-xs">
+                    <div class="flex justify-between border-b border-slate-200 pb-2">
+                        <span class="text-slate-500">Nomor Pendaftaran:</span>
+                        <span id="resNoPendaftaran" class="font-extrabold text-garjek-700 text-sm">GJ-20260921-0001</span>
+                    </div>
+                    <div class="flex justify-between border-b border-slate-200 pb-2">
+                        <span class="text-slate-500">Nama Driver:</span>
+                        <span id="resNamaDriver" class="font-bold text-slate-800">AHMAD SYAIFUDDIN</span>
+                    </div>
+                    <div class="flex justify-between border-b border-slate-200 pb-2">
+                        <span class="text-slate-500">Layanan Dipilih:</span>
+                        <span id="resLayanan" class="font-bold text-slate-800">GARBIKE</span>
+                    </div>
+                    <div class="flex justify-between border-b border-slate-200 pb-2">
+                        <span class="text-slate-500">Tanggal Pendaftaran:</span>
+                        <span id="resTanggal" class="font-bold text-slate-800">21 September 2026</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Status Pendaftaran:</span>
+                        <span class="font-bold text-amber-600">MENUNGGU VERIFIKASI</span>
+                    </div>
+                </div>
+
+                <p class="text-xs text-slate-400 italic">
+                    Simpan atau cetak nomor pendaftaran ini untuk melakukan pengecekan status secara berkala.
+                </p>
+
+                <div class="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+                    <button onclick="window.print()" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-print"></i> CETAK / SIMPAN BUKTI PENDAFTARAN
+                    </button>
+                    <button onclick="switchTab('status')" class="px-5 py-2.5 bg-garjek-600 hover:bg-garjek-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-magnifying-glass"></i> CEK STATUS PENDAFTARAN
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: CEK STATUS PENDAFTARAN -->
+        <section id="tab-status" class="hidden max-w-3xl mx-auto space-y-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 md:p-8 space-y-6">
+                <div class="text-center max-w-lg mx-auto space-y-2">
+                    <div class="w-12 h-12 bg-garjek-100 text-garjek-600 rounded-2xl flex items-center justify-center text-xl mx-auto">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                    <h2 class="text-2xl font-extrabold text-slate-900">CEK STATUS PENDAFTARAN</h2>
+                    <p class="text-xs text-slate-500">Masukkan 16 digit NIK yang Anda daftarkan untuk melihat perkembangan proses verifikasi.</p>
+                </div>
+
+                <!-- Form Search NIK -->
+                <form onsubmit="handleCekStatus(event)" class="flex flex-col sm:flex-row gap-3 max-w-xl mx-auto">
+                    <input type="text" id="searchNik" required maxlength="16" placeholder="Masukkan 16 Digit NIK KTP Anda" oninput="this.value = this.value.replace(/[^0-9]/g, '')" class="flex-grow px-4 py-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-garjek-500 text-sm font-semibold tracking-wider">
+                    <button type="submit" class="px-6 py-3 bg-garjek-600 hover:bg-garjek-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-garjek-600/30 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-search"></i> CARI DATA
+                    </button>
+                </form>
+
+                <!-- Result Status Box -->
+                <div id="statusResultBox" class="hidden border border-slate-200 rounded-2xl p-6 bg-slate-50 space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+                        <div>
+                            <span class="text-[11px] text-slate-400 uppercase font-bold">Nomor Pendaftaran</span>
+                            <h3 id="stResRegNo" class="text-lg font-extrabold text-garjek-700">GJ-20260921-0001</h3>
+                        </div>
+                        <div id="stResBadgeOverall" class="px-3 py-1 rounded-full text-xs font-bold uppercase bg-amber-100 text-amber-800">
+                            Menunggu Verifikasi
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <div class="bg-white p-3 rounded-xl border border-slate-200">
+                            <span class="text-slate-400 block">Nama Driver (Masked):</span>
+                            <span id="stResName" class="font-bold text-slate-800 text-sm">A**** S********</span>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-slate-200">
+                            <span class="text-slate-400 block">Jenis Layanan:</span>
+                            <span id="stResService" class="font-bold text-slate-800 text-sm">GARBIKE</span>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-slate-200">
+                            <span class="text-slate-400 block">Tanggal Pendaftaran:</span>
+                            <span id="stResDate" class="font-bold text-slate-800 text-sm">21 Sep 2026</span>
+                        </div>
+                        <div class="bg-white p-3 rounded-xl border border-slate-200">
+                            <span class="text-slate-400 block">Verifikasi Pembayaran:</span>
+                            <span id="stResPayStatus" class="font-bold text-blue-600 text-sm">Terverifikasi</span>
+                        </div>
+                    </div>
+
+                    <!-- Admin Notes Alert Box -->
+                    <div class="p-4 bg-amber-50 border border-amber-200 rounded-xl space-y-1">
+                        <span class="text-xs font-bold text-amber-800 uppercase flex items-center gap-1.5">
+                            <i class="fa-solid fa-comment-dots"></i> Catatan Verifikasi Administrator:
+                        </span>
+                        <p id="stResAdminNotes" class="text-xs text-amber-900 leading-relaxed font-medium">
+                            Berkas lengkap. Menunggu jadwal pemanggilan verifikasi fisik dan pengambilan atribut rompi/helm.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: ADMIN LOGIN -->
+        <section id="tab-admin-login" class="hidden max-w-md mx-auto py-8">
+            <div class="bg-white rounded-2xl shadow-xl border border-slate-200 p-6 md:p-8 space-y-6">
+                <div class="text-center space-y-2">
+                    <div class="w-12 h-12 bg-slate-900 text-garjek-500 rounded-2xl flex items-center justify-center text-xl mx-auto shadow-md">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <h2 class="text-2xl font-extrabold text-slate-900">ADMIN LOGIN</h2>
+                    <p class="text-xs text-slate-500">Masuk untuk mengelola data verifikasi pendaftaran mitra GARJEK.</p>
+                </div>
+
+                <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Username Admin</label>
+                        <input type="text" id="adminUser" required class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-garjek-500 text-sm" placeholder="admin">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Password</label>
+                        <input type="password" id="adminPass" required class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-garjek-500 text-sm" placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-sm transition shadow-lg flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-right-to-bracket"></i> MASUK DASHBOARD
+                    </button>
+                </form>
+                <p class="text-[11px] text-center text-slate-400">
+                    Sistem Keamanan Terenkripsi GARJEK Enterprise
+                </p>
+            </div>
+        </section>
+
+        <!-- TAB 4: DASHBOARD ADMINISTRATOR -->
+        <section id="tab-admin-dashboard" class="hidden space-y-6">
+            <!-- Dashboard Top Bar -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-900 text-white p-6 rounded-2xl shadow-lg">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-garjek-600 rounded-xl flex items-center justify-center text-xl text-white font-bold">
+                        <i class="fa-solid fa-gauge-high"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-extrabold tracking-tight">DASHBOARD ADMINISTRATOR</h2>
+                        <p class="text-xs text-slate-400">Pengelolaan Data Driver & Verifikasi Realtime</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="openSettingsModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-bold rounded-xl border border-slate-700 transition flex items-center gap-2">
+                        <i class="fa-solid fa-sliders"></i> Pengaturan System
+                    </button>
+                    <button onclick="handleAdminLogout()" class="px-4 py-2 bg-red-600/80 hover:bg-red-600 text-xs font-bold rounded-xl transition flex items-center gap-2">
+                        <i class="fa-solid fa-power-off"></i> Logout
+                    </button>
+                </div>
+            </div>
+
+            <!-- STATS CARDS GRID -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-1">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase">Total Pendaftar</span>
+                    <div id="statTotal" class="text-2xl font-black text-slate-900">0</div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-1">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase">Pendaftar Hari Ini</span>
+                    <div id="statToday" class="text-2xl font-black text-garjek-600">0</div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-1">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase">GARBIKE / GARCAR</span>
+                    <div id="statServices" class="text-xl font-black text-slate-800">0 / 0</div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-1 border-l-4 border-l-amber-500">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase">Menunggu Verifikasi</span>
+                    <div id="statPending" class="text-2xl font-black text-amber-600">0</div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-1 border-l-4 border-l-emerald-500">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase">Disetujui</span>
+                    <div id="statApproved" class="text-2xl font-black text-emerald-600">0</div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-1 border-l-4 border-l-red-500">
+                    <span class="text-[11px] font-bold text-slate-400 uppercase">Ditolak / Perbaikan</span>
+                    <div id="statRejected" class="text-2xl font-black text-red-600">0</div>
+                </div>
+            </div>
+
+            <!-- CHARTS ROW -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3 lg:col-span-2">
+                    <h3 class="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Tren Pendaftaran Driver</h3>
+                    <div class="h-64">
+                        <canvas id="chartTrend"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+                    <h3 class="text-xs font-extrabold text-slate-800 uppercase tracking-wider">Komposisi Layanan</h3>
+                    <div class="h-64 flex items-center justify-center">
+                        <canvas id="chartServices"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DRIVER DATA TABLE SECTION -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden space-y-4 p-5">
+                <!-- Controls & Filters Bar -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <input type="text" id="adminSearchInput" onkeyup="renderAdminTable()" placeholder="Cari NIK / No Reg / Nama..." class="px-3.5 py-2 rounded-xl border border-slate-300 text-xs font-medium w-full sm:w-60">
+                        
+                        <select id="adminFilterService" onchange="renderAdminTable()" class="px-3 py-2 rounded-xl border border-slate-300 text-xs font-semibold">
+                            <option value="">Semua Layanan</option>
+                            <option value="GARBIKE">GARBIKE</option>
+                            <option value="GARCAR">GARCAR</option>
+                        </select>
+
+                        <select id="adminFilterStatus" onchange="renderAdminTable()" class="px-3 py-2 rounded-xl border border-slate-300 text-xs font-semibold">
+                            <option value="">Semua Status</option>
+                            <option value="Menunggu Verifikasi">Menunggu Verifikasi</option>
+                            <option value="Sedang Diproses">Sedang Diproses</option>
+                            <option value="Disetujui">Disetujui</option>
+                            <option value="Ditolak">Ditolak</option>
+                            <option value="Perlu Perbaikan">Perlu Perbaikan</option>
+                        </select>
+                    </div>
+
+                    <!-- Export Actions -->
+                    <div class="flex items-center gap-2">
+                        <button onclick="exportToCSV()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-file-excel"></i> Export Excel (CSV)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Table Container -->
+                <div class="overflow-x-auto border border-slate-200 rounded-xl">
+                    <table class="w-full text-left text-xs">
+                        <thead class="bg-slate-100 text-slate-700 font-bold uppercase border-b border-slate-200">
+                            <tr>
+                                <th class="p-3">No Reg & Tanggal</th>
+                                <th class="p-3">Nama Driver</th>
+                                <th class="p-3">NIK</th>
+                                <th class="p-3">WhatsApp</th>
+                                <th class="p-3">Layanan</th>
+                                <th class="p-3">Kendaraan</th>
+                                <th class="p-3">Status Dokumen</th>
+                                <th class="p-3">Status Bayar</th>
+                                <th class="p-3">Status Pendaftaran</th>
+                                <th class="p-3 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminTableBody" class="divide-y divide-slate-200 font-medium text-slate-800">
+                            <!-- JS Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Table Pagination Footer -->
+                <div class="flex items-center justify-between text-xs text-slate-500 pt-2">
+                    <span id="tablePaginationInfo">Menampilkan 0 data</span>
+                    <div class="flex items-center gap-1">
+                        <button onclick="changePage(-1)" id="btnPrevPage" class="px-3 py-1.5 border border-slate-300 rounded-lg hover:bg-slate-100 font-bold">Prev</button>
+                        <span id="currentPageBadge" class="px-3 py-1 font-bold text-slate-800">1</span>
+                        <button onclick="changePage(1)" id="btnNextPage" class="px-3 py-1.5 border border-slate-300 rounded-lg hover:bg-slate-100 font-bold">Next</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL DETAIL & VERIFIKASI ADMINISTRATOR -->
+    <div id="detailModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200 space-y-6 p-6">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-4">
+                <div>
+                    <h3 class="text-xl font-extrabold text-slate-900">DETAIL & VERIFIKASI PENDAFTAR</h3>
+                    <p id="modalRegNo" class="text-xs text-garjek-600 font-bold">GJ-20260921-0001</p>
+                </div>
+                <button onclick="closeDetailModal()" class="p-2 text-slate-400 hover:text-slate-700 rounded-lg text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Detail Tabs -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                <!-- Data Diri Box -->
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                    <h4 class="font-bold text-slate-800 border-b pb-1 uppercase">1. Data Diri & Alamat</h4>
+                    <p><strong>Nama:</strong> <span id="mNama">-</span></p>
+                    <p><strong>NIK:</strong> <span id="mNIK">-</span></p>
+                    <p><strong>TTL:</strong> <span id="mTTL">-</span></p>
+                    <p><strong>Gender:</strong> <span id="mGender">-</span></p>
+                    <p><strong>WhatsApp:</strong> <span id="mWA">-</span></p>
+                    <p><strong>Email:</strong> <span id="mEmail">-</span></p>
+                    <p><strong>Alamat:</strong> <span id="mAlamat">-</span></p>
+                </div>
+
+                <!-- Kendaraan Box -->
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                    <h4 class="font-bold text-slate-800 border-b pb-1 uppercase">2. Data Layanan & Armada</h4>
+                    <p><strong>Layanan:</strong> <span id="mLayanan">-</span></p>
+                    <p><strong>No. Polisi:</strong> <span id="mNoPol">-</span></p>
+                    <p><strong>Merek/Tipe:</strong> <span id="mMerekTipe">-</span></p>
+                    <p><strong>Tahun/Warna:</strong> <span id="mTahunWarna">-</span></p>
+                    <p><strong>No. STNK:</strong> <span id="mNoSTNK">-</span></p>
+                    <p><strong>Pemilik:</strong> <span id="mPemilik">-</span></p>
+                </div>
+
+                <!-- Dokumen Action Buttons -->
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+                    <h4 class="font-bold text-slate-800 border-b pb-1 uppercase">3. Lihat Berkas Dokumen</h4>
+                    <div class="grid grid-cols-1 gap-1.5 pt-1">
+                        <button onclick="viewDoc('KTP')" class="px-3 py-1.5 bg-slate-800 text-white rounded-lg text-left font-semibold hover:bg-slate-700 transition flex items-center justify-between">
+                            <span><i class="fa-solid fa-id-card mr-1.5"></i> Lihat KTP</span> <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </button>
+                        <button onclick="viewDoc('SIM')" class="px-3 py-1.5 bg-slate-800 text-white rounded-lg text-left font-semibold hover:bg-slate-700 transition flex items-center justify-between">
+                            <span><i class="fa-solid fa-address-card mr-1.5"></i> Lihat SIM</span> <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </button>
+                        <button onclick="viewDoc('STNK')" class="px-3 py-1.5 bg-slate-800 text-white rounded-lg text-left font-semibold hover:bg-slate-700 transition flex items-center justify-between">
+                            <span><i class="fa-solid fa-file-invoice mr-1.5"></i> Lihat STNK</span> <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </button>
+                        <button onclick="viewDoc('Driver')" class="px-3 py-1.5 bg-slate-800 text-white rounded-lg text-left font-semibold hover:bg-slate-700 transition flex items-center justify-between">
+                            <span><i class="fa-solid fa-user mr-1.5"></i> Lihat Foto Driver</span> <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </button>
+                        <button onclick="viewDoc('Kendaraan')" class="px-3 py-1.5 bg-slate-800 text-white rounded-lg text-left font-semibold hover:bg-slate-700 transition flex items-center justify-between">
+                            <span><i class="fa-solid fa-car mr-1.5"></i> Lihat Foto Kendaraan</span> <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </button>
+                        <button onclick="viewDoc('BuktiBayar')" class="px-3 py-1.5 bg-blue-700 text-white rounded-lg text-left font-semibold hover:bg-blue-800 transition flex items-center justify-between">
+                            <span><i class="fa-solid fa-receipt mr-1.5"></i> Lihat Bukti Bayar</span> <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Verifikasi Admin -->
+            <form onsubmit="handleSaveVerification(event)" class="bg-garjek-50 border border-garjek-200 rounded-xl p-5 space-y-4">
+                <h4 class="text-sm font-bold text-garjek-800 uppercase flex items-center gap-2">
+                    <i class="fa-solid fa-check-double"></i> Form Verifikasi Administrator
+                </h4>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Verifikasi Dokumen</label>
+                        <select id="verifDocStatus" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs font-bold">
+                            <option value="Lengkap">Lengkap</option>
+                            <option value="Tidak Lengkap">Tidak Lengkap</option>
+                            <option value="Perlu Perbaikan">Perlu Perbaikan</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Verifikasi Pembayaran</label>
+                        <select id="verifPayStatus" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs font-bold">
+                            <option value="Terverifikasi">Terverifikasi</option>
+                            <option value="Belum Diverifikasi">Belum Diverifikasi</option>
+                            <option value="Tidak Valid">Tidak Valid</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Status Pendaftaran Akhir</label>
+                        <select id="verifOverallStatus" class="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs font-bold">
+                            <option value="Menunggu Verifikasi">Menunggu Verifikasi</option>
+                            <option value="Sedang Diproses">Sedang Diproses</option>
+                            <option value="Disetujui">Disetujui</option>
+                            <option value="Ditolak">Ditolak</option>
+                            <option value="Perlu Perbaikan">Perlu Perbaikan</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Catatan / Pesan untuk Driver</label>
+                    <textarea id="verifNotes" rows="2" placeholder="Contoh: Foto SIM kurang jelas, mohon lakukan re-upload." class="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs"></textarea>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2 border-t border-garjek-200">
+                    <button type="button" onclick="closeDetailModal()" class="px-4 py-2 border border-slate-300 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100">Batal</button>
+                    <button type="submit" class="px-6 py-2 bg-garjek-600 hover:bg-garjek-700 text-white rounded-xl text-xs font-bold transition shadow-md">
+                        <i class="fa-solid fa-floppy-disk mr-1"></i> SIMPAN PERUBAHAN VERIFIKASI
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL SETTINGS SYSTEM -->
+    <div id="settingsModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 p-6 space-y-5">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+                <h3 class="text-lg font-extrabold text-slate-900">PENGATURAN SYSTEM & TARIF</h3>
+                <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-700 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <form onsubmit="handleSaveSettings(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Biaya GARBIKE (Rp)</label>
+                    <input type="number" id="cfgGarbikeFee" required class="w-full px-3.5 py-2 rounded-lg border border-slate-300 text-sm font-bold">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Biaya GARCAR (Rp)</label>
+                    <input type="number" id="cfgGarcarFee" required class="w-full px-3.5 py-2 rounded-lg border border-slate-300 text-sm font-bold">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nomor DANA Penerima</label>
+                    <input type="text" id="cfgDanaNo" required class="w-full px-3.5 py-2 rounded-lg border border-slate-300 text-sm font-bold">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nama Pemilik DANA</label>
+                    <input type="text" id="cfgDanaName" required class="w-full px-3.5 py-2 rounded-lg border border-slate-300 text-sm font-bold">
+                </div>
+
+                <div class="pt-3 border-t border-slate-200 flex justify-end gap-2">
+                    <button type="button" onclick="closeSettingsModal()" class="px-4 py-2 border border-slate-300 rounded-xl text-xs font-bold">Batal</button>
+                    <button type="submit" class="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold">Simpan Config</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- DOCUMENT LIGHTBOX MODAL -->
+    <div id="docViewerModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-2xl w-full p-4 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h4 id="docViewerTitle" class="font-bold text-sm uppercase text-slate-800">Pratinjau Dokumen</h4>
+                <button onclick="closeDocViewer()" class="text-slate-400 hover:text-slate-700 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="flex justify-center bg-slate-100 rounded-xl p-2 min-h-[300px] items-center">
+                <img id="docViewerImg" class="max-h-[70vh] rounded-lg object-contain">
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl text-xs font-semibold hidden flex items-center gap-2 border border-slate-700">
+        <i id="toastIcon" class="fa-solid fa-circle-info text-garjek-500 text-base"></i>
+        <span id="toastMsg">Pesan Notifikasi</span>
+    </div>
+
+    <!-- SCRIPT LOGIC -->
+    <script>
+        // Configuration & In-Memory Store
+        let currentStep = 1;
+        let systemConfig = {
+            garbikeFee: 150000,
+            garcarFee: 250000,
+            danaNo: "081932592253",
+            danaName: "Ahmad Syaifuddin"
+        };
+
+        // GAS Web App URL Handler (Auto detect or fallback to simulation mode)
+        const GAS_ENDPOINT_URL = "YOUR_GAS_DEPLOYED_WEB_APP_URL"; 
+
+        // Initial Data Mock (Store for local demo & synced with Apps Script)
+        let driverDatabase = [
+            {
+                regNo: "GJ-20260921-0001",
+                date: "2026-09-21",
+                nama: "AHMAD SYAIFUDDIN",
+                nik: "3201932592253001",
+                tempatLahir: "BEKASI",
+                tanggalLahir: "1995-08-12",
+                gender: "LAKI-LAKI",
+                wa: "081932592253",
+                email: "ahmad@garjek.com",
+                alamat: "JL. GARUDA NO 12, RT 02/014, DESA MANGUNJAYA, KEC. TAMBUN SELATAN, BEKASI",
+                layanan: "GARBIKE",
+                noPol: "B 4590 KJS",
+                kendaraan: "HONDA VARIO 160 (2022)",
+                stnk: "1290381023",
+                pemilik: "AHMAD SYAIFUDDIN",
+                docStatus: "Lengkap",
+                payStatus: "Terverifikasi",
+                overallStatus: "Disetujui",
+                notes: "Berkas dan bukti bayar valid. Selamat bergabung mitra!",
+                docs: {
+                    KTP: "https://placehold.co/600x400/166534/ffffff?text=FOTO+KTP+ASLI",
+                    SIM: "https://placehold.co/600x400/166534/ffffff?text=FOTO+SIM+C",
+                    STNK: "https://placehold.co/600x400/166534/ffffff?text=FOTO+STNK",
+                    Driver: "https://placehold.co/600x400/166534/ffffff?text=PASFOTO+DRIVER",
+                    Kendaraan: "https://placehold.co/600x400/166534/ffffff?text=FOTO+KENDARAAN",
+                    BuktiBayar: "https://placehold.co/600x400/166534/ffffff?text=BUKTI+TRANSFER+DANA"
+                }
+            }
+        ];
+
+        // Files Base64 Buffer for Current Registration Form
+        let currentUploadedFiles = {};
+        let activeSelectedDriver = null;
+        let currentPage = 1;
+        const itemsPerPage = 8;
+        let chartTrendObj = null;
+        let chartServicesObj = null;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            updateConfigUI();
+            initCharts();
+            renderAdminTable();
+        });
+
+        // Tab Navigation
+        function switchTab(tabId) {
+            ['register', 'status', 'admin-login', 'admin-dashboard', 'success'].forEach(id => {
+                const el = document.getElementById('tab-' + id);
+                if (el) el.classList.add('hidden');
+            });
+
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+
+            // Nav active states
+            ['register', 'status', 'admin'].forEach(n => {
+                const btn = document.getElementById('nav-' + n);
+                if (btn) {
+                    btn.classList.remove('bg-garjek-600', 'text-white');
+                    btn.classList.add('text-slate-300');
+                }
+            });
+
+            if (tabId === 'register') document.getElementById('nav-register').classList.add('bg-garjek-600', 'text-white');
+            if (tabId === 'status') document.getElementById('nav-status').classList.add('bg-garjek-600', 'text-white');
+            if (tabId.startsWith('admin')) document.getElementById('nav-admin').classList.add('bg-garjek-600', 'text-white');
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
+        }
+
+        // Wizard Stepper Controls
+        function goToStep(step) {
+            if (step > currentStep && !validateCurrentStep()) return;
+            
+            document.getElementById(`step-content-${currentStep}`).classList.add('hidden');
+            currentStep = step;
+            document.getElementById(`step-content-${currentStep}`).classList.remove('hidden');
+
+            // Update Progress Bar
+            const percent = ((currentStep - 1) / 5) * 100;
+            document.getElementById('progress-bar-fill').style.width = `${percent}%`;
+
+            // Update Badges
+            for (let i = 1; i <= 6; i++) {
+                const badge = document.getElementById(`step-badge-${i}`);
+                if (i < currentStep) {
+                    badge.className = "w-9 h-9 rounded-full border-2 step-done font-bold flex items-center justify-center text-sm shadow-sm transition";
+                    badge.innerHTML = '<i class="fa-solid fa-check text-xs"></i>';
+                } else if (i === currentStep) {
+                    badge.className = "w-9 h-9 rounded-full border-2 step-active font-bold flex items-center justify-center text-sm shadow-sm transition";
+                    badge.innerText = i;
+                } else {
+                    badge.className = "w-9 h-9 rounded-full border-2 bg-white border-slate-300 text-slate-500 font-bold flex items-center justify-center text-sm transition";
+                    badge.innerText = i;
+                }
+            }
+
+            // Buttons Visibility
+            document.getElementById('btnPrev').classList.toggle('hidden', currentStep === 1);
+            document.getElementById('btnNext').classList.toggle('hidden', currentStep === 6);
+            document.getElementById('btnSubmit').classList.toggle('hidden', currentStep !== 6);
+
+            if (currentStep === 6) updateSummary();
+        }
+
+        function changeStep(delta) {
+            goToStep(currentStep + delta);
+        }
+
+        function validateCurrentStep() {
+            if (currentStep === 1) {
+                const nama = document.getElementById('namaLengkap').value.trim();
+                const nik = document.getElementById('nik').value.trim();
+                const wa = document.getElementById('whatsapp').value.trim();
+                const email = document.getElementById('email').value.trim();
+
+                if (!nama || !nik || !wa || !email) {
+                    showToast("Mohon lengkapi seluruh field Data Diri wajib!", "error");
+                    return false;
+                }
+                if (nik.length !== 16) {
+                    showToast("NIK KTP harus tepat 16 digit angka!", "error");
+                    return false;
+                }
+            } else if (currentStep === 3) {
+                const noPol = document.getElementById('noPolisi').value.trim();
+                if (!noPol) {
+                    showToast("Mohon lengkapi Nomor Polisi Kendaraan!", "error");
+                    return false;
+                }
+            } else if (currentStep === 4) {
+                if (!currentUploadedFiles.KTP || !currentUploadedFiles.SIM || !currentUploadedFiles.STNK) {
+                    showToast("Mohon upload seluruh berkas dokumen KTP, SIM, dan STNK!", "error");
+                    return false;
+                }
+            } else if (currentStep === 5) {
+                if (!currentUploadedFiles.BuktiBayar) {
+                    showToast("Mohon unggah foto Bukti Pembayaran Transfer DANA!", "error");
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function selectService(service) {
+            document.getElementById('layananPilihan').value = service;
+            const isGarbike = service === 'GARBIKE';
+
+            document.getElementById('card-garbike').className = isGarbike 
+                ? "cursor-pointer border-2 border-garjek-600 bg-garjek-50/50 rounded-2xl p-6 transition-all shadow-md relative"
+                : "cursor-pointer border-2 border-slate-200 rounded-2xl p-6 transition-all hover:border-garjek-500 relative";
+
+            document.getElementById('card-garcar').className = !isGarbike 
+                ? "cursor-pointer border-2 border-blue-600 bg-blue-50/50 rounded-2xl p-6 transition-all shadow-md relative"
+                : "cursor-pointer border-2 border-slate-200 rounded-2xl p-6 transition-all hover:border-garjek-500 relative";
+
+            document.getElementById('check-garbike').classList.toggle('opacity-0', !isGarbike);
+            document.getElementById('check-garcar').classList.toggle('opacity-0', isGarbike);
+
+            // Update Payment info step
+            document.getElementById('paymentServiceTitle').innerText = service;
+            const fee = isGarbike ? systemConfig.garbikeFee : systemConfig.garcarFee;
+            document.getElementById('paymentAmountDisplay').innerText = `Rp${fee.toLocaleString('id-ID')}`;
+        }
+
+        function handleFilePreview(input, imgId, nameId) {
+            const file = input.files[0];
+            if (!file) return;
+
+            if (file.size > 5 * 1024 * 1024) {
+                showToast("Ukuran file melebihi batas maksimal 5MB!", "error");
+                input.value = "";
+                return;
+            }
+
+            document.getElementById(nameId).innerText = `${file.name} (${(file.size/1024).toFixed(0)} KB)`;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.getElementById(imgId);
+                img.src = e.target.result;
+                img.classList.remove('hidden');
+
+                // Store Base64 Data
+                const key = input.id.replace('file', '');
+                currentUploadedFiles[key] = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function updateSummary() {
+            document.getElementById('summaryNama').innerText = document.getElementById('namaLengkap').value || '-';
+            document.getElementById('summaryNIK').innerText = document.getElementById('nik').value || '-';
+            document.getElementById('summaryWA').innerText = document.getElementById('whatsapp').value || '-';
+            document.getElementById('summaryLayanan').innerText = document.getElementById('layananPilihan').value;
+            document.getElementById('summaryNoPol').innerText = document.getElementById('noPolisi').value || '-';
+            document.getElementById('summaryKendaraan').innerText = `${document.getElementById('merekKendaraan').value} ${document.getElementById('tipeKendaraan').value}`;
+        }
+
+        function copyDanaNumber() {
+            const text = document.getElementById('danaNumberText').innerText;
+            navigator.clipboard.writeText(text);
+            showToast("Nomor DANA berhasil disalin ke clipboard!");
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            if (!document.getElementById('persetujuanCheck').checked) {
+                showToast("Anda harus menyetujui syaratan & ketentuan!", "error");
+                return;
+            }
+
+            // Generate Unique Registration No
+            const dateStr = new Date().toISOString().slice(0,10).replace(/-/g, "");
+            const randomSeq = String(driverDatabase.length + 1).padStart(4, '0');
+            const newRegNo = `GJ-${dateStr}-${randomSeq}`;
+
+            const newDriver = {
+                regNo: newRegNo,
+                date: new Date().toISOString().slice(0,10),
+                nama: document.getElementById('namaLengkap').value,
+                nik: document.getElementById('nik').value,
+                tempatLahir: document.getElementById('tempatLahir').value,
+                tanggalLahir: document.getElementById('tanggalLahir').value,
+                gender: document.getElementById('jenisKelamin').value,
+                wa: document.getElementById('whatsapp').value,
+                email: document.getElementById('email').value,
+                alamat: `${document.getElementById('alamatLengkap').value}, RT ${document.getElementById('rt').value}/RW ${document.getElementById('rw').value}, DESA ${document.getElementById('desa').value}, KEC. ${document.getElementById('kecamatan').value}, ${document.getElementById('kabupaten').value}`,
+                layanan: document.getElementById('layananPilihan').value,
+                noPol: document.getElementById('noPolisi').value,
+                kendaraan: `${document.getElementById('merekKendaraan').value} ${document.getElementById('tipeKendaraan').value} (${document.getElementById('tahunKendaraan').value})`,
+                stnk: document.getElementById('noSTNK').value,
+                pemilik: document.getElementById('namaPemilikKendaraan').value,
+                docStatus: "Perlu Verifikasi",
+                payStatus: "Menunggu Verifikasi",
+                overallStatus: "Menunggu Verifikasi",
+                notes: "Pendaftaran baru dikirim. Silakan tunggu proses verifikasi.",
+                docs: { ...currentUploadedFiles }
+            };
+
+            // Push to local database store
+            driverDatabase.unshift(newDriver);
+
+            // Attempt async dispatch to GAS Endpoint if URL configured
+            if (GAS_ENDPOINT_URL && GAS_ENDPOINT_URL !== "YOUR_GAS_DEPLOYED_WEB_APP_URL") {
+                fetch(GAS_ENDPOINT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'registerDriver', data: newDriver })
+                }).catch(err => console.log("GAS Sync Notice:", err));
+            }
+
+            // Render Success Tab
+            document.getElementById('resNoPendaftaran').innerText = newRegNo;
+            document.getElementById('resNamaDriver').innerText = newDriver.nama;
+            document.getElementById('resLayanan').innerText = newDriver.layanan;
+            document.getElementById('resTanggal').innerText = newDriver.date;
+
+            renderAdminTable();
+            switchTab('success');
+            showToast("Pendaftaran Mitra Berhasil Dikirim!");
+        }
+
+        function handleCekStatus(e) {
+            e.preventDefault();
+            const searchNik = document.getElementById('searchNik').value.trim();
+            const match = driverDatabase.find(d => d.nik === searchNik);
+
+            const box = document.getElementById('statusResultBox');
+            if (match) {
+                box.classList.remove('hidden');
+                document.getElementById('stResRegNo').innerText = match.regNo;
+                
+                // Masking Sensitive Name (A**** S********)
+                const nameParts = match.nama.split(" ");
+                const maskedName = nameParts.map(p => p[0] + "*".repeat(Math.max(1, p.length - 1))).join(" ");
+                document.getElementById('stResName').innerText = maskedName;
+
+                document.getElementById('stResService').innerText = match.layanan;
+                document.getElementById('stResDate').innerText = match.date;
+                document.getElementById('stResPayStatus').innerText = match.payStatus;
+                document.getElementById('stResAdminNotes').innerText = match.notes || "Belum ada catatan dari administrator.";
+
+                // Status Badge Color
+                const badge = document.getElementById('stResBadgeOverall');
+                badge.innerText = match.overallStatus;
+                if (match.overallStatus === 'Disetujui') {
+                    badge.className = "px-3 py-1 rounded-full text-xs font-bold uppercase bg-emerald-100 text-emerald-800";
+                } else if (match.overallStatus === 'Ditolak') {
+                    badge.className = "px-3 py-1 rounded-full text-xs font-bold uppercase bg-red-100 text-red-800";
+                } else {
+                    badge.className = "px-3 py-1 rounded-full text-xs font-bold uppercase bg-amber-100 text-amber-800";
+                }
+            } else {
+                box.classList.add('hidden');
+                showToast("Data NIK tidak ditemukan dalam sistem!", "error");
+            }
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('adminUser').value;
+            const p = document.getElementById('adminPass').value;
+
+            if (u === "admin" && p === "admin123") {
+                showToast("Login Administrator Berhasil!");
+                switchTab('admin-dashboard');
+                renderAdminTable();
+            } else {
+                showToast("Username atau Password Admin Salah!", "error");
+            }
+        }
+
+        function handleAdminLogout() {
+            switchTab('admin-login');
+            showToast("Anda telah logout dari portal admin.");
+        }
+
+        function renderAdminTable() {
+            const tbody = document.getElementById('adminTableBody');
+            if (!tbody) return;
+
+            const query = document.getElementById('adminSearchInput')?.value.toLowerCase() || "";
+            const svcFilter = document.getElementById('adminFilterService')?.value || "";
+            const stFilter = document.getElementById('adminFilterStatus')?.value || "";
+
+            let filtered = driverDatabase.filter(item => {
+                const matchQ = item.nama.toLowerCase().includes(query) || item.nik.includes(query) || item.regNo.toLowerCase().includes(query);
+                const matchS = svcFilter ? item.layanan === svcFilter : true;
+                const matchSt = stFilter ? item.overallStatus === stFilter : true;
+                return matchQ && matchS && matchSt;
+            });
+
+            // Update Stats
+            document.getElementById('statTotal').innerText = driverDatabase.length;
+            const todayStr = new Date().toISOString().slice(0,10);
+            document.getElementById('statToday').innerText = driverDatabase.filter(d => d.date === todayStr).length;
+            
+            const garbikeCnt = driverDatabase.filter(d => d.layanan === 'GARBIKE').length;
+            const garcarCnt = driverDatabase.filter(d => d.layanan === 'GARCAR').length;
+            document.getElementById('statServices').innerText = `${garbikeCnt} / ${garcarCnt}`;
+
+            document.getElementById('statPending').innerText = driverDatabase.filter(d => d.overallStatus === 'Menunggu Verifikasi').length;
+            document.getElementById('statApproved').innerText = driverDatabase.filter(d => d.overallStatus === 'Disetujui').length;
+            document.getElementById('statRejected').innerText = driverDatabase.filter(d => ['Ditolak', 'Perlu Perbaikan'].includes(d.overallStatus)).length;
+
+            // Pagination Logic
+            const totalPages = Math.ceil(filtered.length / itemsPerPage) || 1;
+            if (currentPage > totalPages) currentPage = totalPages;
+
+            const startIdx = (currentPage - 1) * itemsPerPage;
+            const pageData = filtered.slice(startIdx, startIdx + itemsPerPage);
+
+            tbody.innerHTML = "";
+            if (pageData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="10" class="p-6 text-center text-slate-400">Tidak ada data pendaftar yang sesuai.</td></tr>`;
+            } else {
+                pageData.forEach(d => {
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+                    tr.innerHTML = `
+                        <td class="p-3">
+                            <span class="font-bold text-garjek-700 block">${d.regNo}</span>
+                            <span class="text-[11px] text-slate-400">${d.date}</span>
+                        </td>
+                        <td class="p-3 font-bold">${d.nama}</td>
+                        <td class="p-3 font-mono">${d.nik}</td>
+                        <td class="p-3">${d.wa}</td>
+                        <td class="p-3"><span class="px-2 py-0.5 rounded font-bold text-[10px] ${d.layanan==='GARBIKE'?'bg-emerald-100 text-emerald-800':'bg-blue-100 text-blue-800'}">${d.layanan}</span></td>
+                        <td class="p-3">${d.noPol}<br><span class="text-[10px] text-slate-400">${d.kendaraan}</span></td>
+                        <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] bg-slate-100 text-slate-700 font-bold">${d.docStatus}</span></td>
+                        <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] bg-blue-50 text-blue-700 font-bold">${d.payStatus}</span></td>
+                        <td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold ${d.overallStatus==='Disetujui'?'bg-emerald-100 text-emerald-800':'bg-amber-100 text-amber-800'}">${d.overallStatus}</span></td>
+                        <td class="p-3 text-center">
+                            <button onclick="openDetailModal('${d.regNo}')" class="px-2.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-[11px] font-bold rounded-lg transition shadow-sm">
+                                <i class="fa-solid fa-eye"></i> Detail
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            document.getElementById('tablePaginationInfo').innerText = `Menampilkan ${pageData.length} dari ${filtered.length} pendaftar`;
+            document.getElementById('currentPageBadge').innerText = currentPage;
+
+            updateChartData(garbikeCnt, garcarCnt);
+        }
+
+        function changePage(delta) {
+            currentPage += delta;
+            renderAdminTable();
+        }
+
+        function openDetailModal(regNo) {
+            activeSelectedDriver = driverDatabase.find(d => d.regNo === regNo);
+            if (!activeSelectedDriver) return;
+
+            document.getElementById('modalRegNo').innerText = activeSelectedDriver.regNo;
+            document.getElementById('mNama').innerText = activeSelectedDriver.nama;
+            document.getElementById('mNIK').innerText = activeSelectedDriver.nik;
+            document.getElementById('mTTL').innerText = `${activeSelectedDriver.tempatLahir}, ${activeSelectedDriver.tanggalLahir}`;
+            document.getElementById('mGender').innerText = activeSelectedDriver.gender;
+            document.getElementById('mWA').innerText = activeSelectedDriver.wa;
+            document.getElementById('mEmail').innerText = activeSelectedDriver.email;
+            document.getElementById('mAlamat').innerText = activeSelectedDriver.alamat;
+
+            document.getElementById('mLayanan').innerText = activeSelectedDriver.layanan;
+            document.getElementById('mNoPol').innerText = activeSelectedDriver.noPol;
+            document.getElementById('mMerekTipe').innerText = activeSelectedDriver.kendaraan;
+            document.getElementById('mTahunWarna').innerText = activeSelectedDriver.kendaraan;
+            document.getElementById('mNoSTNK').innerText = activeSelectedDriver.stnk;
+            document.getElementById('mPemilik').innerText = activeSelectedDriver.pemilik;
+
+            // Form inputs
+            document.getElementById('verifDocStatus').value = activeSelectedDriver.docStatus || "Lengkap";
+            document.getElementById('verifPayStatus').value = activeSelectedDriver.payStatus || "Terverifikasi";
+            document.getElementById('verifOverallStatus').value = activeSelectedDriver.overallStatus || "Menunggu Verifikasi";
+            document.getElementById('verifNotes').value = activeSelectedDriver.notes || "";
+
+            document.getElementById('detailModal').classList.remove('hidden');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.add('hidden');
+        }
+
+        function viewDoc(type) {
+            if (!activeSelectedDriver || !activeSelectedDriver.docs || !activeSelectedDriver.docs[type]) {
+                showToast(`Berkas foto ${type} tidak tersedia!`, "error");
+                return;
+            }
+            document.getElementById('docViewerTitle').innerText = `DOKUMEN ${type} - ${activeSelectedDriver.nama}`;
+            document.getElementById('docViewerImg').src = activeSelectedDriver.docs[type];
+            document.getElementById('docViewerModal').classList.remove('hidden');
+        }
+
+        function closeDocViewer() {
+            document.getElementById('docViewerModal').classList.add('hidden');
+        }
+
+        function handleSaveVerification(e) {
+            e.preventDefault();
+            if (!activeSelectedDriver) return;
+
+            activeSelectedDriver.docStatus = document.getElementById('verifDocStatus').value;
+            activeSelectedDriver.payStatus = document.getElementById('verifPayStatus').value;
+            activeSelectedDriver.overallStatus = document.getElementById('verifOverallStatus').value;
+            activeSelectedDriver.notes = document.getElementById('verifNotes').value;
+
+            renderAdminTable();
+            closeDetailModal();
+            showToast("Perubahan status verifikasi berhasil disimpan!");
+        }
+
+        function openSettingsModal() {
+            document.getElementById('cfgGarbikeFee').value = systemConfig.garbikeFee;
+            document.getElementById('cfgGarcarFee').value = systemConfig.garcarFee;
+            document.getElementById('cfgDanaNo').value = systemConfig.danaNo;
+            document.getElementById('cfgDanaName').value = systemConfig.danaName;
+            document.getElementById('settingsModal').classList.remove('hidden');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').classList.add('hidden');
+        }
+
+        function handleSaveSettings(e) {
+            e.preventDefault();
+            systemConfig.garbikeFee = parseInt(document.getElementById('cfgGarbikeFee').value);
+            systemConfig.garcarFee = parseInt(document.getElementById('cfgGarcarFee').value);
+            systemConfig.danaNo = document.getElementById('cfgDanaNo').value;
+            systemConfig.danaName = document.getElementById('cfgDanaName').value;
+
+            updateConfigUI();
+            closeSettingsModal();
+            showToast("Pengaturan tarif dan DANA berhasil diperbarui!");
+        }
+
+        function updateConfigUI() {
+            document.getElementById('garcarFeeDisplay').innerText = `Rp${systemConfig.garcarFee.toLocaleString('id-ID')}`;
+            document.getElementById('danaNumberText').innerText = systemConfig.danaNo;
+            document.getElementById('paymentAccountName').innerText = systemConfig.danaName;
+        }
+
+        function exportToCSV() {
+            let csv = "No Reg,Tanggal,Nama,NIK,WhatsApp,Layanan,No Polisi,Kendaraan,Status Dokumen,Status Bayar,Status Overall\n";
+            driverDatabase.forEach(d => {
+                csv += `"${d.regNo}","${d.date}","${d.nama}","'${d.nik}","${d.wa}","${d.layanan}","${d.noPol}","${d.kendaraan}","${d.docStatus}","${d.payStatus}","${d.overallStatus}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute("download", `Data_Mitra_GARJEK_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast("Data pendaftar berhasil di-export ke Excel (CSV)!");
+        }
+
+        function initCharts() {
+            const ctx1 = document.getElementById('chartTrend').getContext('2d');
+            chartTrendObj = new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
+                    datasets: [{
+                        label: 'Jumlah Pendaftar',
+                        data: [4, 7, 3, 12, 8, 15, 10],
+                        borderColor: '#16a34a',
+                        backgroundColor: 'rgba(22, 163, 74, 0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            const ctx2 = document.getElementById('chartServices').getContext('2d');
+            chartServicesObj = new Chart(ctx2, {
+                type: 'doughnut',
+                data: {
+                    labels: ['GARBIKE', 'GARCAR'],
+                    datasets: [{
+                        data: [1, 0],
+                        backgroundColor: ['#16a34a', '#2563eb']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        function updateChartData(garbike, garcar) {
+            if (chartServicesObj) {
+                chartServicesObj.data.datasets[0].data = [garbike, garcar];
+                chartServicesObj.update();
+            }
+        }
+
+        function showToast(msg, type = "success") {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toastIcon');
+            const txt = document.getElementById('toastMsg');
+
+            txt.innerText = msg;
+            icon.className = type === "error" ? "fa-solid fa-circle-xmark text-red-500 text-base" : "fa-solid fa-circle-check text-garjek-500 text-base";
+            
+            toast.classList.remove('hidden');
+            setTimeout(() => { toast.classList.add('hidden'); }, 3500);
+        }
+    </script>
+</body>
+</html>
